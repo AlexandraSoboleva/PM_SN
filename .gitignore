@@ -3,3 +3,9 @@
 .RData
 .Ruserdata
 opt_graph.csv
+res_event_log_4500.csv
+user_desc.csv
+inst/doc
+doc
+Meta
+social_net_edge_list.csv
