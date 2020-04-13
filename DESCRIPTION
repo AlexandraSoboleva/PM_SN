@@ -1,0 +1,15 @@
+Package: PM_SN
+Title: Package for extraction and analysis resource social graph
+Version: 0.0.0.1
+Authors@R: person("Alexandra", "Soboleva", email = "sania.soboleva@mail.ru", role = c("aut", "cre"))
+Description: Package extarcts resource social graph from event log of custommer suppoert systems, detects social community and finds leader in resource social graph.
+Depends: R (>= 3.5.1)
+Imports:
+  igraph (>= 1.2.4.2),
+  tidyverse (>= 1.3.0),
+  RCy3 (>= 2.2.9).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+Suggests: testthat
