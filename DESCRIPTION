@@ -1,6 +1,6 @@
 Package: PMSN
 Title: Package for extraction and analysis resource social graph
-Version: 0.0.0.1
+Version: 0.0.0.2
 Authors@R: person("Alexandra", "Soboleva", email = "sania.soboleva@mail.ru", role = c("aut", "cre"))
 Description: Package extarcts resource social graph from event log of custommer suppoert systems, detects social community and finds leader in resource social graph.
 Depends: R (>= 3.5.1)

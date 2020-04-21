@@ -181,40 +181,48 @@ social_graph_from_event_log <- function(log, filename_sn_list) {
   temp_log <- unique(temp_log)
   names(temp_log) <- c("case_id", "timestamp", "resource")
   entity_list <- unique(temp_log$case_id)
-  res <- NULL
-  res$resource1[1] <- "0"
-  res$resource2[1] <- "0"
-  res$freq[1] <- 0
-  res$total_time[1] <- 0
-  res$max_time[1] <- 0
-  res$min_time[1] <- 0
-  res <- data.frame(res, stringsAsFactors = FALSE)
+  e_res <- NULL
+  e_res$resource1[1] <- "0"
+  e_res$resource2[1] <- "0"
+  e_res$freq[1] <- 0
+  e_res$total_time[1] <- 0
+  e_res$max_time[1] <- 0
+  e_res$min_time[1] <- 0
+  e_res <- data.frame(e_res, stringsAsFactors = FALSE)
+  v_res <- NULL
+  v_res$name <- "0"
   for (i in entity_list) {
     trace <- temp_log[temp_log$case_id == i, ]
     trace <- trace[order(trace$timestamp), ]
-    pred_resource <- trace$resource[1]
-    pred_time <- trace$timestamp[1]
-    for (j in c(2:nrow(trace))) {
-      duration <- as.numeric(abs(difftime(trace$timestamp[j], pred_time, units = "mins")))
-      exists_ind <- which(res$resource1 == pred_resource & res$resource2 == trace$resource[j])
-      if (length(exists_ind) > 0) {
-        res$freq[exists_ind] <- res$freq[exists_ind] + 1
-        res$total_time[exists_ind] <- res$total_time[exists_ind] + duration
-        res$max_time[exists_ind] <- max(res$max_time[exists_ind], duration)
-        res$min_time[exists_ind] <- min(res$min_time[exists_ind], duration)
-      }else{
-        res <- rbind(res, list(pred_resource, trace$resource[j], 1, duration, duration, duration))
+    if (nrow(trace) == 1) {
+      v_res <- rbind(v_res, trace$resource[1])
+    } else {
+      pred_resource <- trace$resource[1]
+      pred_time <- trace$timestamp[1]
+      for (j in c(2:nrow(trace))) {
+        duration <- as.numeric(abs(difftime(trace$timestamp[j], pred_time, units = "mins")))
+        exists_ind <- which(e_res$resource1 == pred_resource & e_res$resource2 == trace$resource[j])
+        if (length(exists_ind) > 0) {
+          e_res$freq[exists_ind] <- e_res$freq[exists_ind] + 1
+          e_res$total_time[exists_ind] <- e_res$total_time[exists_ind] + duration
+          e_res$max_time[exists_ind] <- max(e_res$max_time[exists_ind], duration)
+          e_res$min_time[exists_ind] <- min(e_res$min_time[exists_ind], duration)
+        }else{
+          e_res <- rbind(e_res, list(pred_resource, trace$resource[j], 1, duration, duration, duration))
+        }
+        pred_resource <- trace$resource[j]
+        pred_time <- trace$timestamp[j]
       }
-      pred_resource <- trace$resource[j]
-      pred_time <- trace$timestamp[j]
     }
   }
-  res$total_time <- round(res$total_time, 2)
-  res$max_time <- round(res$max_time, 2)
-  res$min_time <- round(res$min_time, 2)
-  write.csv(res, file = filename_sn_list, row.names = FALSE, quote = TRUE)
+  e_res$total_time <- round(e_res$total_time, 2)
+  e_res$max_time <- round(e_res$max_time, 2)
+  e_res$min_time <- round(e_res$min_time, 2)
+  write.csv(e_res, file = filename_sn_list, row.names = FALSE, quote = TRUE)
+  verts <- c(v_res$name, e_res$resource1, e_res$resource2)
+  verts <- unique(verts)
   print(paste("social_net ready, find it in a file", filename_sn_list))
-  gr <- igraph::graph_from_data_frame(res, directed = TRUE)
+  gr <- igraph::graph_from_data_frame(e_res, vertices = verts, directed = TRUE)
   print(gr)
   return(gr)
 }
